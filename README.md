@@ -6,7 +6,28 @@
 
 Dictation at cursor for Linux.
 
-## Installation
+## Quick Install (Ubuntu 22.04+)
+
+```bash
+git clone https://github.com/prykej/xhisper.git
+cd xhisper && chmod +x install.sh && ./install.sh
+```
+
+**Prerequisite:** Groq API key from [console.groq.com](https://console.groq.com) (free). If you don't have `~/.env` set up, the installer will prompt you.
+
+After install, enable the hotkey daemon:
+
+```bash
+systemctl --user enable --now xhisper-keyd
+```
+
+**Hotkey: `LeftCtrl + Super + LeftAlt`** — press and release to toggle recording.
+
+Log out and back in for the `input` group change the installer makes (or if `groups` doesn't show `input` yet).
+
+---
+
+## Manual Setup
 
 ### Dependencies
 
@@ -40,35 +61,35 @@ sudo xbps-install pipewire jq curl ffmpeg gcc</code></pre>
 
 **Note:** `wl-clipboard` (Wayland) or `xclip` (X11) required for non-ASCII but usually pre-installed.
 
-### Setup
+### Build & Install
 
-1. **Add user to input group** to access `/dev/uinput`:
-```sh
-sudo usermod -aG input $USER
-```
-Then **log out and log back in** (restart is safer) for the group change to take effect.
-
-Check by running:
-
-```sh
-groups
-```
-
-You should see `input` in the output.
-
-2. **Get a Groq API key** from [console.groq.com](https://console.groq.com) (free tier available) and add to `~/.env`:
-```sh
-GROQ_API_KEY=<your_API_key>
-```
-
-3. Clone the repository and install:
-```sh
-git clone --depth 1 https://github.com/imaginalnika/xhisper.git
+```bash
+git clone --depth 1 https://github.com/prykej/xhisper.git
 cd xhisper && make
 sudo make install
 ```
 
-4. Bind `xhisper` binary to your favorite key:
+### Hotkey Setup (xhisper-keyd)
+
+The hotkey daemon (`xhisper-keyd`) listens for `LeftCtrl + Super + LeftAlt` and toggles xhisper recording globally.
+
+```bash
+# Add user to input group if not already
+sudo usermod -aG input $USER
+# Log out and back in
+
+# Start manually
+xhisper-keyd -v
+
+# Or enable as a systemd user service
+systemctl --user enable --now xhisper-keyd
+```
+
+Alternative: keep using xhisper via your WM keybinding (see below) — run it twice to toggle.
+
+### WM / Desktop Keybinding
+
+You can still bind `xhisper` directly to any key in your WM if you prefer not to use the hotkey daemon.
 
 <details>
 <summary>keyd</summary>
@@ -120,7 +141,7 @@ action="/usr/local/bin/xhisper"
 media_keys=org.gnome.settings-daemon.plugins.media-keys
 custom_kbd=org.gnome.settings-daemon.plugins.media-keys.custom-keybinding
 kbd_path=/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/$name/
-new_bindings=`gsettings get $media_keys custom-keybindings | sed -e"s>'\]>','$kbd_path']>"| sed -e"s>@as \[\]>['$kbd_path']>"`
+new_bindings=`gsettings get $media_keys custom-keybindings | sed -e"s>'\\]>','$kbd_path']>"| sed -e"s>@as \\[\\]>['$kbd_path']>"`
 gsettings set $media_keys custom-keybindings "$new_bindings"
 gsettings set $custom_kbd:$kbd_path name "$name"
 gsettings set $custom_kbd:$kbd_path binding "$binding"
@@ -132,11 +153,19 @@ gsettings set $custom_kbd:$kbd_path command "$action"
 
 ## Usage
 
-Simply run `xhisper` twice (via your favorite keybinding):
+### With hotkey daemon (recommended)
+
+Press and release `LeftCtrl + Super + LeftAlt`:
+- **First press**: Starts recording
+- **Second press**: Stops and transcribes
+
+The transcription is typed at your cursor position.
+
+### Without hotkey daemon (manual toggle)
+
+Simply run `xhisper` twice via your WM keybinding:
 - **First run**: Starts recording
 - **Second run**: Stops and transcribes
-
-The transcription will be typed at your cursor position.
 
 **View logs:**
 ```sh
@@ -165,11 +194,25 @@ mkdir -p ~/.config/xhisper
 cp default_xhisperrc ~/.config/xhisper/xhisperrc
 ```
 
+---
+
 ## Troubleshooting
 
 **Terminal Applications**: Clipboard paste uses Ctrl+V, which doesn't work in terminal emulators (they require Ctrl+Shift+V). Temporary workaround is to remap Ctrl+V to paste in your terminal emulator's settings. Note that *this limitation only affects international/Unicode characters*. ASCII characters (a-z, A-Z, 0-9, punctuation) are typed directly and doesn't care whether terminal or not.
 
 **Non-ASCII Transcription**: Increase non-ascii-*-delay to give the transcription longer timing buffer.
+
+**Permission denied on /dev/input/event***: Make sure you're in the `input` group and have logged out and back in:
+```sh
+sudo usermod -aG input $USER
+# Log out and back in, then check:
+groups  # should include 'input'
+```
+
+**xhisper-keyd not finding keyboards**: Run with `-v` flag to see which devices are monitored:
+```sh
+xhisper-keyd -v
+```
 
 ---
 
