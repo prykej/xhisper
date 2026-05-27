@@ -25,6 +25,25 @@ systemctl --user enable --now xhisper-keyd
 
 Log out and back in for the `input` group change the installer makes (or if `groups` doesn't show `input` yet).
 
+### System Tray Indicator
+
+After install, start the indicator for on-screen status and control:
+
+```bash
+xhisper-indicator &
+```
+
+Or enable auto-start at login — the installer places `~/.config/autostart/xhisper-indicator.desktop` for this.
+
+The indicator appears in the top-right panel (GNOME AppIndicator extension required — preinstalled on Ubuntu 24.04). It shows:
+
+- **Microphone icon** — idle / recording state
+- **Start Recording** — begin dictation
+- **Stop & Transcribe** — end recording and type at cursor
+- **View Logs** — see transcription history
+- **Restart Hotkey Daemon** — if Ctrl+Alt+Super stops responding
+- **Quit** — close indicator (hotkey daemon keeps running)
+
 ---
 
 ## Manual Setup

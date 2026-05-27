@@ -35,7 +35,7 @@ echo "═══ xhisper installer for Ubuntu 24.04+ ═══"
 echo ""
 
 MISSING_PKGS=""
-for pkg in pipewire jq curl ffmpeg gcc xdg-utils; do
+for pkg in pipewire jq curl ffmpeg gcc xdg-utils python3-gi python3-gi-cairo; do
     if ! dpkg -s "$pkg" &>/dev/null 2>&1; then
         MISSING_PKGS="$MISSING_PKGS $pkg"
     fi
@@ -184,6 +184,22 @@ X-GNOME-Autostart-enabled=true
 EOF
 info "Desktop autostart entry installed (fallback)."
 
+# ── Install xhisper-indicator (system tray) ────────────────────────────────
+
+echo ""
+echo "Setting up xhisper-indicator (system tray)..."
+
+cat > "$AUTOSTART_DIR/xhisper-indicator.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=xhisper-indicator
+Comment=xhisper dictation system tray indicator
+Exec=/usr/bin/python3 $BINDIR/xhisper-indicator
+Hidden=false
+X-GNOME-Autostart-enabled=true
+EOF
+info "Indicator autostart entry installed."
+
 # ── Summary ──────────────────────────────────────────────────────────────
 
 echo ""
@@ -205,6 +221,9 @@ echo "    xhisper"
 echo ""
 echo "  View logs:"
 echo "    xhisper --log"
+echo ""
+echo "  System tray indicator: xhisper-indicator"
+echo "    (auto-starts at login, or run manually)"
 echo ""
 echo "  Config: ~/.config/xhisper/xhisperrc"
 echo ""

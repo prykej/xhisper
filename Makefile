@@ -17,18 +17,20 @@ xhisper-keyd: xhisper-keyd.c
 test: test.c
 	$(CC) $(CFLAGS) test.c -o test
 
-install: xhispertool xhisper-keyd xhisper.sh
+install: xhispertool xhisper-keyd xhisper.sh xhisper-indicator.py
 	install -d $(DESTDIR)$(BINDIR)
 	install -m 755 xhispertool $(DESTDIR)$(BINDIR)/xhispertool
 	ln -sf xhispertool $(DESTDIR)$(BINDIR)/xhispertoold
 	install -m 755 xhisper.sh $(DESTDIR)$(BINDIR)/xhisper
 	install -m 755 xhisper-keyd $(DESTDIR)$(BINDIR)/xhisper-keyd
+	install -m 755 xhisper-indicator.py $(DESTDIR)$(BINDIR)/xhisper-indicator
 
 uninstall:
 	rm -f $(DESTDIR)$(BINDIR)/xhisper
 	rm -f $(DESTDIR)$(BINDIR)/xhispertool
 	rm -f $(DESTDIR)$(BINDIR)/xhispertoold
 	rm -f $(DESTDIR)$(BINDIR)/xhisper-keyd
+	rm -f $(DESTDIR)$(BINDIR)/xhisper-indicator
 
 clean:
 	rm -f xhispertool xhispertoold xhisper-keyd test
