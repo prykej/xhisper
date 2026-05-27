@@ -31,9 +31,9 @@ PIDFILE_KEYD   = os.path.join(os.environ.get("XDG_RUNTIME_DIR", "/tmp"), "xhispe
 
 # ── Icon names (use system theme icons, no custom files needed) ────────────
 
-ICON_IDLE      = "audio-input-microphone-symbolic"
-ICON_RECORDING = "audio-input-microgram-symbolic"  # fallback if above not found
-ICON_RECORDING_ALT = "media-record-symbolic"
+ICON_IDLE        = "edit-paste-symbolic"
+ICON_RECORDING   = "media-record-symbolic"
+ICON_TRANSCRIBING = "view-refresh-symbolic"
 
 # ── State ──────────────────────────────────────────────────────────────────
 
@@ -162,7 +162,7 @@ class XhisperIndicator:
         if rec != self.recording:
             self.recording = rec
             if rec:
-                self.indicator.set_icon_full(ICON_RECORDING_ALT, "Recording...")
+                self.indicator.set_icon_full(ICON_RECORDING, "Recording...")
                 self.item_toggle.set_label("⏺  Recording...")
                 self.item_toggle.set_sensitive(False)
                 self.item_transcribe.set_sensitive(True)
