@@ -74,6 +74,22 @@ else
     info "User is in 'input' group."
 fi
 
+# ── Install udev rule for /dev/uinput ─────────────────────────────────────
+
+UDEV_RULE="/etc/udev/rules.d/99-xhisper-uinput.rules"
+if [ ! -f "$UDEV_RULE" ]; then
+    echo "Installing udev rule for /dev/uinput access..."
+    sudo tee "$UDEV_RULE" > /dev/null <<'RULE'
+# xhisper — allow input group to access /dev/uinput for virtual keyboard input
+KERNEL=="uinput", GROUP="input", MODE="0660"
+RULE
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger --name-match=uinput
+    info "udev rule installed. /dev/uinput is now accessible by 'input' group."
+else
+    info "udev rule already present."
+fi
+
 # ── Build ────────────────────────────────────────────────────────────────
 
 echo ""

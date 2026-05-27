@@ -1,0 +1,2 @@
+# xhisper - allow input group to access /dev/uinput for virtual keyboard input
+KERNEL=="uinput", GROUP="input", MODE="0660"
